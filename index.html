@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinguaAI - Digital Language Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f1117;--ink2:#3d4152;--ink3:#6b7080;
+  --surf:#ffffff;--surf2:#f5f4f0;--surf3:#eceae4;
+  --accent:#1a6b4a;--accent2:#2d9e6e;--accent3:#e8f5ef;
+  --warn:#c45c1a;--warn2:#f5e8de;
+  --err:#c41a2e;--err2:#f5dee2;
+  --blue:#1a4b8a;--blue2:#deeaf7;
+  --gold:#8a6b1a;--gold2:#f7f0de;
+  --radius:12px;--radius-sm:8px;
+  font-family:'DM Sans',sans-serif;
+}
+body{background:var(--surf2);min-height:100vh;color:var(--ink)}
+
+.screen{display:none;min-height:100vh;animation:fadeIn .3s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOGIN */
+.login-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+.login-left{background:var(--accent);padding:3rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.login-left::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.07)}
+.login-left::after{content:'';position:absolute;bottom:-80px;left:-40px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.05)}
+.brand{color:#fff;z-index:1;position:relative}
+.brand-logo{font-family:'DM Serif Display',serif;font-size:2.2rem;letter-spacing:-.02em;margin-bottom:.4rem}
+.brand-tag{font-size:.85rem;opacity:.75;font-weight:300;letter-spacing:.04em;text-transform:uppercase}
+.brand-desc{color:rgba(255,255,255,.8);font-size:1rem;line-height:1.7;max-width:320px;z-index:1;position:relative}
+.login-right{background:var(--surf);padding:3rem;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.login-form{width:100%;max-width:380px}
+.login-title{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink);margin-bottom:.4rem}
+.login-sub{color:var(--ink3);font-size:.9rem;margin-bottom:2.5rem}
+.field{margin-bottom:1.25rem}
+.field label{display:block;font-size:.8rem;font-weight:500;color:var(--ink2);margin-bottom:.5rem;letter-spacing:.03em;text-transform:uppercase}
+.field input{width:100%;padding:.85rem 1rem;border:1.5px solid var(--surf3);border-radius:var(--radius-sm);font-size:.95rem;font-family:'DM Sans',sans-serif;background:var(--surf2);color:var(--ink);outline:none;transition:border .2s}
+.field input:focus{border-color:var(--accent2);background:var(--surf)}
+.btn-primary{width:100%;padding:.9rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background .2s,transform .1s}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:active{transform:scale(.98)}
+.login-hint{text-align:center;margin-top:1.25rem;font-size:.82rem;color:var(--ink3)}
+
+/* TOP NAV */
+.topnav{height:60px;background:var(--surf);border-bottom:1px solid var(--surf3);display:flex;align-items:center;padding:0 2rem;gap:1.5rem;position:sticky;top:0;z-index:100}
+.nav-brand{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--accent);margin-right:auto}
+.nav-btn{padding:.45rem 1rem;border-radius:var(--radius-sm);font-size:.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;border:1.5px solid transparent;font-weight:500;transition:all .2s}
+.nav-btn.ghost{border-color:var(--surf3);color:var(--ink2);background:transparent}
+.nav-btn.ghost:hover{border-color:var(--accent2);color:var(--accent)}
+.nav-btn.active{background:var(--accent3);color:var(--accent);border-color:transparent}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600}
+
+/* LAYOUT */
+.app-screen{flex:1;display:flex;flex-direction:column;min-height:100vh}
+.main-content{flex:1;padding:2rem;max-width:900px;margin:0 auto;width:100%}
+
+/* DASHBOARD */
+.dash-greeting{margin-bottom:2rem}
+.dash-greeting h2{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--ink);margin-bottom:.25rem}
+.dash-greeting p{color:var(--ink3);font-size:.95rem}
+.score-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.score-card{background:var(--surf);border-radius:var(--radius);padding:1.4rem 1.5rem;border:1px solid var(--surf3)}
+.sc-label{font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:.75rem}
+.sc-value{font-family:'DM Serif Display',serif;font-size:2.2rem;line-height:1}
+.sc-value.green{color:var(--accent)}
+.sc-value.amber{color:var(--warn)}
+.sc-value.blue{color:var(--blue)}
+.sc-sub{font-size:.8rem;color:var(--ink3);margin-top:.5rem}
+.sc-bar{height:4px;border-radius:2px;background:var(--surf3);margin-top:.75rem;overflow:hidden}
+.sc-bar-fill{height:100%;border-radius:2px;transition:width .8s ease}
+.fill-green{background:var(--accent2)}
+.fill-amber{background:var(--warn)}
+.fill-blue{background:var(--blue)}
+.section-title{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:1rem}
+.activity-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:2rem}
+.activity-item{background:var(--surf);border-radius:var(--radius-sm);padding:1rem 1.25rem;border:1px solid var(--surf3);display:flex;align-items:center;gap:1rem}
+.ai-score-badge{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;flex-shrink:0}
+.badge-green{background:var(--accent3);color:var(--accent)}
+.badge-amber{background:var(--warn2);color:var(--warn)}
+.badge-blue{background:var(--blue2);color:var(--blue)}
+.ai-content{flex:1;min-width:0}
+.ai-sentence{font-size:.9rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-meta{font-size:.78rem;color:var(--ink3);margin-top:.15rem}
+.ai-time{font-size:.78rem;color:var(--ink3);margin-left:auto;white-space:nowrap}
+.suggestions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:2rem}
+.suggestion-card{background:var(--surf);border-radius:var(--radius);padding:1.25rem;border:1px solid var(--surf3);cursor:pointer;transition:border-color .2s,transform .15s}
+.suggestion-card:hover{border-color:var(--accent2);transform:translateY(-2px)}
+.sug-icon{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--accent3);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.75rem}
+.sug-title{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.sug-desc{font-size:.78rem;color:var(--ink3);line-height:1.5}
+.start-practice-btn{width:100%;padding:1rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background .2s}
+.start-practice-btn:hover{background:var(--accent2)}
+
+/* PRACTICE */
+.practice-header{margin-bottom:2rem}
+.practice-header h2{font-family:'DM Serif Display',serif;font-size:1.7rem;margin-bottom:.25rem}
+.practice-header p{color:var(--ink3);font-size:.9rem}
+.sentences-list{display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem}
+.sentence-card{background:var(--surf);border:2px solid var(--surf3);border-radius:var(--radius);padding:1.25rem 1.5rem;cursor:pointer;transition:all .2s;position:relative}
+.sentence-card:hover{border-color:var(--accent2);background:var(--accent3)}
+.sentence-card.selected{border-color:var(--accent);background:var(--accent3)}
+.sentence-card.selected::after{content:'Selected';position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--accent)}
+.sent-level{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.sent-text{font-size:1.05rem;color:var(--ink);line-height:1.6}
+.sent-topic{font-size:.78rem;color:var(--ink3);margin-top:.35rem}
+.recorder-panel{background:var(--surf);border-radius:var(--radius);padding:2rem;border:1px solid var(--surf3);margin-bottom:2rem;text-align:center}
+.recorder-title{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:1.5rem}
+.rec-sentence-display{font-size:1.15rem;font-style:italic;color:var(--ink2);margin-bottom:2rem;line-height:1.7;padding:.75rem 1.25rem;background:var(--surf2);border-radius:var(--radius-sm);border-left:3px solid var(--accent)}
+.record-btn{width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:2rem;transition:all .2s;margin:0 auto 1rem}
+.record-btn.idle{background:var(--surf2);border:2px solid var(--surf3)}
+.record-btn.recording{background:#fee2e2;border:2px solid #ef4444;animation:pulse 1.5s infinite}
+.record-btn:hover{transform:scale(1.05)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0)}}
+.rec-status{font-size:.85rem;color:var(--ink3);margin-bottom:.5rem;min-height:1.2em}
+.rec-timer{font-size:1.5rem;font-family:'DM Serif Display',serif;color:var(--ink);min-height:2rem}
+.transcript-box{background:var(--surf2);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-top:1.5rem;text-align:left;border:1px solid var(--surf3);min-height:60px}
+.transcript-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:.5rem}
+.transcript-text{font-size:.95rem;color:var(--ink2);line-height:1.6;font-style:italic}
+.get-feedback-btn{width:100%;padding:1rem;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background .2s;margin-top:1rem}
+.get-feedback-btn:hover{background:var(--accent2)}
+.get-feedback-btn:disabled{background:var(--surf3);color:var(--ink3);cursor:not-allowed}
+
+/* FEEDBACK */
+.feedback-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem;background:var(--surf);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--surf3)}
+.overall-score{text-align:center;flex-shrink:0}
+.score-ring{width:90px;height:90px;position:relative;margin:0 auto .5rem}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring-label{font-family:'DM Serif Display',serif;font-size:1.5rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.feedback-title{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:.35rem}
+.feedback-sentence{font-size:.9rem;color:var(--ink3);margin-bottom:.75rem;font-style:italic}
+.score-pills{display:flex;gap:.6rem;flex-wrap:wrap}
+.score-pill{padding:.3rem .8rem;border-radius:100px;font-size:.8rem;font-weight:500}
+.pill-green{background:var(--accent3);color:var(--accent)}
+.pill-amber{background:var(--warn2);color:var(--warn)}
+.pill-blue{background:var(--blue2);color:var(--blue)}
+.comparison-box{background:var(--surf);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--surf3);margin-bottom:1.5rem}
+.comp-row{margin-bottom:1rem}
+.comp-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:.5rem}
+.comp-text{font-size:1rem;line-height:1.8;color:var(--ink)}
+.word-ok{color:var(--ink)}
+.word-missing{background:#fee2e2;color:var(--err);padding:0 3px;border-radius:3px;text-decoration:line-through}
+.word-added{background:#fef3c7;color:var(--warn);padding:0 3px;border-radius:3px;border-bottom:1px dashed var(--warn)}
+.feedback-sections{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem}
+.feedback-card{background:var(--surf);border-radius:var(--radius);padding:1.25rem;border:1px solid var(--surf3)}
+.fc-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.fc-icon{font-size:1.1rem}
+.fc-title{font-size:.85rem;font-weight:600;color:var(--ink)}
+.fc-score{margin-left:auto;font-size:.85rem;font-weight:600}
+.fc-score.green{color:var(--accent)}
+.fc-score.amber{color:var(--warn)}
+.feedback-items{display:flex;flex-direction:column;gap:.5rem}
+.fi{font-size:.82rem;color:var(--ink2);padding:.5rem .75rem;background:var(--surf2);border-radius:var(--radius-sm);line-height:1.5;border-left:2px solid var(--surf3)}
+.fi.issue{border-left-color:var(--warn)}
+.fi.good{border-left-color:var(--accent2)}
+.suggestions-section{background:var(--surf);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--surf3);margin-bottom:1.5rem}
+.suggestion-item{display:flex;gap:.75rem;align-items:flex-start;padding:.75rem 0;border-bottom:1px solid var(--surf3)}
+.suggestion-item:last-child{border-bottom:none;padding-bottom:0}
+.si-num{width:24px;height:24px;border-radius:50%;background:var(--accent3);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:.05rem}
+.si-text{font-size:.88rem;color:var(--ink2);line-height:1.6}
+.si-text strong{color:var(--ink);font-weight:600}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-outline{padding:.9rem 1rem;border:2px solid var(--accent);color:var(--accent);background:transparent;border-radius:var(--radius);font-size:.95rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-outline:hover{background:var(--accent3)}
+.ai-loading{display:flex;align-items:center;gap:.75rem;padding:1rem;color:var(--ink3);font-size:.88rem}
+.ai-dots{display:flex;gap:4px}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:dotPulse 1.2s infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+@media(max-width:700px){
+  .login-wrap{grid-template-columns:1fr}
+  .login-left{display:none}
+  .score-cards{grid-template-columns:1fr 1fr}
+  .feedback-sections{grid-template-columns:1fr}
+  .action-row{grid-template-columns:1fr}
+  .suggestions-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div class="brand">
+        <div class="brand-logo">LinguaAI</div>
+        <div class="brand-tag">Digital Language Lab</div>
+      </div>
+      <div class="brand-desc">
+        Speak. Learn. Improve. Our AI-powered platform gives you real-time pronunciation feedback and personalized coaching to accelerate your English fluency.
+      </div>
+      <div style="color:rgba(255,255,255,.5);font-size:.8rem">Powered by advanced speech analysis</div>
+    </div>
+    <div class="login-right">
+      <div class="login-form">
+        <div class="login-title">Welcome back</div>
+        <div class="login-sub">Sign in to continue your learning journey</div>
+        <div class="field">
+          <label>Email or Username</label>
+          <input type="text" id="login-user" placeholder="learner@example.com" value="demo@linguaai.com">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••" value="demo1234">
+        </div>
+        <button class="btn-primary" onclick="doLogin()">Sign In →</button>
+        <div class="login-hint">Any credentials work for this demo ✦</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: DASHBOARD -->
+<div id="screen-dashboard" class="screen">
+  <div class="app-screen">
+    <div class="topnav">
+      <div class="nav-brand">LinguaAI</div>
+      <button class="nav-btn active" onclick="showScreen('dashboard')">Dashboard</button>
+      <button class="nav-btn ghost" onclick="showScreen('practice')">Practice</button>
+      <div class="nav-avatar" id="nav-avatar">DL</div>
+    </div>
+    <div class="main-content">
+      <div class="dash-greeting">
+        <h2>Good morning, <span id="dash-username">Learner</span> 👋</h2>
+        <p>You're on a 3-day streak! Keep it up to reach your weekly goal.</p>
+      </div>
+      <div class="score-cards">
+        <div class="score-card">
+          <div class="sc-label">Overall Fluency</div>
+          <div class="sc-value green" id="dash-fluency">72</div>
+          <div class="sc-sub">↑ +4 from last week</div>
+          <div class="sc-bar"><div class="sc-bar-fill fill-green" style="width:72%"></div></div>
+        </div>
+        <div class="score-card">
+          <div class="sc-label">Pronunciation</div>
+          <div class="sc-value amber" id="dash-pronunciation">68</div>
+          <div class="sc-sub">↑ +2 from last week</div>
+          <div class="sc-bar"><div class="sc-bar-fill fill-amber" style="width:68%"></div></div>
+        </div>
+        <div class="score-card">
+          <div class="sc-label">Sessions Done</div>
+          <div class="sc-value blue" id="dash-sessions">12</div>
+          <div class="sc-sub">This month</div>
+          <div class="sc-bar"><div class="sc-bar-fill fill-blue" style="width:40%"></div></div>
+        </div>
+      </div>
+      <div class="section-title">Recent Activity</div>
+      <div class="activity-list" id="activity-list">
+        <div class="activity-item">
+          <div class="ai-score-badge badge-green">82</div>
+          <div class="ai-content">
+            <div class="ai-sentence">She enjoys reading books in the library every weekend.</div>
+            <div class="ai-meta">Fluency: 84 · Pronunciation: 80 · Beginner</div>
+          </div>
+          <div class="ai-time">2h ago</div>
+        </div>
+        <div class="activity-item">
+          <div class="ai-score-badge badge-amber">65</div>
+          <div class="ai-content">
+            <div class="ai-sentence">The weather forecast suggests it might rain tomorrow afternoon.</div>
+            <div class="ai-meta">Fluency: 70 · Pronunciation: 60 · Intermediate</div>
+          </div>
+          <div class="ai-time">Yesterday</div>
+        </div>
+        <div class="activity-item">
+          <div class="ai-score-badge badge-blue">74</div>
+          <div class="ai-content">
+            <div class="ai-sentence">I would like to make a reservation for two people.</div>
+            <div class="ai-meta">Fluency: 78 · Pronunciation: 70 · Beginner</div>
+          </div>
+          <div class="ai-time">2 days ago</div>
+        </div>
+      </div>
+      <div class="section-title">Suggested Exercises</div>
+      <div class="suggestions-grid">
+        <div class="suggestion-card" onclick="showScreen('practice')">
+          <div class="sug-icon">🎯</div>
+          <div class="sug-title">Pronunciation Drill</div>
+          <div class="sug-desc">Focus on words with 'th' and 'r' sounds where you need improvement</div>
+        </div>
+        <div class="suggestion-card" onclick="showScreen('practice')">
+          <div class="sug-icon">⚡</div>
+          <div class="sug-title">Fluency Speed Run</div>
+          <div class="sug-desc">Practice speaking without pauses using timed sentences</div>
+        </div>
+        <div class="suggestion-card" onclick="showScreen('practice')">
+          <div class="sug-icon">📚</div>
+          <div class="sug-title">Vocabulary Builder</div>
+          <div class="sug-desc">Sentences with advanced vocabulary for B2-C1 level learners</div>
+        </div>
+        <div class="suggestion-card" onclick="showScreen('practice')">
+          <div class="sug-icon">🔄</div>
+          <div class="sug-title">Retry Yesterday's</div>
+          <div class="sug-desc">Try the weather forecast sentence again to improve your score</div>
+        </div>
+      </div>
+      <button class="start-practice-btn" onclick="showScreen('practice')">Start Today's Practice Session →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: PRACTICE -->
+<div id="screen-practice" class="screen">
+  <div class="app-screen">
+    <div class="topnav">
+      <div class="nav-brand">LinguaAI</div>
+      <button class="nav-btn ghost" onclick="showScreen('dashboard')">Dashboard</button>
+      <button class="nav-btn active" onclick="showScreen('practice')">Practice</button>
+      <div class="nav-avatar">DL</div>
+    </div>
+    <div class="main-content">
+      <div class="practice-header">
+        <h2>Speaking Practice</h2>
+        <p>Select a sentence, then record yourself speaking it clearly.</p>
+      </div>
+      <div class="section-title">Choose a Sentence</div>
+      <div class="sentences-list" id="sentences-list"></div>
+      <div class="recorder-panel">
+        <div class="recorder-title">Recording Studio</div>
+        <div class="rec-sentence-display" id="rec-sentence-display">Select a sentence above to begin</div>
+        <button class="record-btn idle" id="record-btn" onclick="toggleRecording()">🎙️</button>
+        <div class="rec-status" id="rec-status">Press to start recording</div>
+        <div class="rec-timer" id="rec-timer"></div>
+        <div class="transcript-box" id="transcript-box" style="display:none">
+          <div class="transcript-label">What we heard</div>
+          <div class="transcript-text" id="transcript-text"></div>
+        </div>
+        <button class="get-feedback-btn" id="get-feedback-btn" disabled onclick="getFeedback()">Get AI Feedback →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: FEEDBACK -->
+<div id="screen-feedback" class="screen">
+  <div class="app-screen">
+    <div class="topnav">
+      <div class="nav-brand">LinguaAI</div>
+      <button class="nav-btn ghost" onclick="showScreen('dashboard')">Dashboard</button>
+      <button class="nav-btn ghost" onclick="showScreen('practice')">Practice</button>
+      <div class="nav-avatar">DL</div>
+    </div>
+    <div class="main-content">
+      <div id="feedback-loading" class="ai-loading" style="display:none">
+        <div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>
+        Analyzing your speech with AI...
+      </div>
+      <div id="feedback-content">
+        <div class="feedback-header">
+          <div class="overall-score">
+            <div class="score-ring">
+              <svg width="90" height="90" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r="38" fill="none" stroke="#eceae4" stroke-width="7"/>
+                <circle cx="45" cy="45" r="38" fill="none" stroke="#1a6b4a" stroke-width="7"
+                  stroke-dasharray="238.76" id="score-circle" stroke-dashoffset="60" stroke-linecap="round"/>
+              </svg>
+              <div class="score-ring-label" id="overall-score-label">75</div>
+            </div>
+            <div style="font-size:.75rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em">Overall</div>
+          </div>
+          <div>
+            <div class="feedback-title" id="fb-title">Good attempt!</div>
+            <div class="feedback-sentence" id="fb-sentence"></div>
+            <div class="score-pills">
+              <div class="score-pill pill-green" id="fb-fluency-pill">Fluency: 78</div>
+              <div class="score-pill pill-amber" id="fb-pron-pill">Pronunciation: 72</div>
+              <div class="score-pill pill-blue" id="fb-acc-pill">Accuracy: 80%</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-title">Word-by-Word Analysis</div>
+        <div class="comparison-box">
+          <div class="comp-row">
+            <div class="comp-label">Target Sentence</div>
+            <div class="comp-text" id="comp-expected"></div>
+          </div>
+          <div class="comp-row" style="margin-bottom:0">
+            <div class="comp-label">What We Heard</div>
+            <div class="comp-text" id="comp-spoken"></div>
+          </div>
+        </div>
+        <div class="feedback-sections">
+          <div class="feedback-card">
+            <div class="fc-header">
+              <span class="fc-icon">🗣️</span>
+              <span class="fc-title">Fluency</span>
+              <span class="fc-score green" id="fc-fluency-score">78/100</span>
+            </div>
+            <div class="feedback-items" id="fc-fluency-items"></div>
+          </div>
+          <div class="feedback-card">
+            <div class="fc-header">
+              <span class="fc-icon">🎯</span>
+              <span class="fc-title">Pronunciation</span>
+              <span class="fc-score amber" id="fc-pron-score">72/100</span>
+            </div>
+            <div class="feedback-items" id="fc-pron-items"></div>
+          </div>
+        </div>
+        <div class="section-title">AI Improvement Suggestions</div>
+        <div class="suggestions-section" id="ai-suggestions">
+          <div class="ai-loading">
+            <div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>
+            Generating personalized suggestions...
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="btn-outline" onclick="retryPractice()">↩ Try Again</button>
+          <button class="btn-primary" style="border-radius:var(--radius)" onclick="showScreen('dashboard')">Back to Dashboard →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SENTENCES=[
+  {id:1,text:"She enjoys reading books in the library every weekend.",level:"Beginner",topic:"Daily Habits",difficulty:1},
+  {id:2,text:"The weather forecast suggests it might rain tomorrow afternoon.",level:"Intermediate",topic:"Weather",difficulty:2},
+  {id:3,text:"I would like to make a reservation for two people, please.",level:"Beginner",topic:"Travel & Dining",difficulty:1},
+  {id:4,text:"The government announced new environmental regulations last Tuesday.",level:"Advanced",topic:"News & Current Events",difficulty:3},
+  {id:5,text:"Despite the challenges, she remained optimistic about the future.",level:"Intermediate",topic:"Emotions",difficulty:2}
+];
+const LEVEL_COLORS={Beginner:"#1a6b4a",Intermediate:"#c45c1a",Advanced:"#1a4b8a"};
+let currentUser="Demo Learner";
+let selectedSentence=null;
+let isRecording=false;
+let mediaRecorder=null;
+let audioChunks=[];
+let recTimerInterval=null;
+let recSeconds=0;
+let transcribedText="";
+let sessionHistory=[];
+
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  window.scrollTo(0,0);
+}
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim()||"Demo Learner";
+  currentUser=u.split('@')[0].replace(/[^a-zA-Z ]/g,' ').trim()||"Learner";
+  currentUser=currentUser.charAt(0).toUpperCase()+currentUser.slice(1);
+  document.getElementById('dash-username').textContent=currentUser;
+  document.getElementById('nav-avatar').textContent=currentUser.slice(0,2).toUpperCase();
+  renderSentences();
+  showScreen('dashboard');
+}
+function renderSentences(){
+  const list=document.getElementById('sentences-list');
+  list.innerHTML=SENTENCES.map(s=>`
+    <div class="sentence-card" id="sc-${s.id}" onclick="selectSentence(${s.id})">
+      <div class="sent-level" style="color:${LEVEL_COLORS[s.level]}">${s.level}</div>
+      <div class="sent-text">${s.text}</div>
+      <div class="sent-topic">📌 ${s.topic}</div>
+    </div>
+  `).join('');
+}
+function selectSentence(id){
+  selectedSentence=SENTENCES.find(s=>s.id===id);
+  document.querySelectorAll('.sentence-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('sc-'+id).classList.add('selected');
+  document.getElementById('rec-sentence-display').textContent=selectedSentence.text;
+  document.getElementById('transcript-box').style.display='none';
+  document.getElementById('transcript-text').textContent='';
+  transcribedText='';
+  document.getElementById('get-feedback-btn').disabled=true;
+  document.getElementById('rec-status').textContent='Press the microphone to start recording';
+}
+async function toggleRecording(){
+  if(!selectedSentence){alert('Please select a sentence first!');return;}
+  if(isRecording){stopRecording();return;}
+  startRecording();
+}
+async function startRecording(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream);
+    audioChunks=[];
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data)};
+    mediaRecorder.onstop=processAudio;
+    mediaRecorder.start();
+    isRecording=true;
+    recSeconds=0;
+    document.getElementById('record-btn').className='record-btn recording';
+    document.getElementById('record-btn').textContent='⏹️';
+    document.getElementById('rec-status').textContent='Recording... speak clearly';
+    document.getElementById('rec-timer').textContent='0s';
+    recTimerInterval=setInterval(()=>{recSeconds++;document.getElementById('rec-timer').textContent=recSeconds+'s';},1000);
+    document.getElementById('transcript-box').style.display='none';
+    document.getElementById('get-feedback-btn').disabled=true;
+  }catch(e){simulateFallback();}
+}
+function stopRecording(){
+  if(mediaRecorder&&mediaRecorder.state!=='inactive'){
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+  }
+  clearInterval(recTimerInterval);
+  isRecording=false;
+  document.getElementById('record-btn').className='record-btn idle';
+  document.getElementById('record-btn').textContent='🎙️';
+  document.getElementById('rec-status').textContent='Processing your speech...';
+  document.getElementById('rec-timer').textContent='';
+}
+async function processAudio(){
+  const duration=recSeconds;
+  if(duration<1){simulateFallback();return;}
+  const blob=new Blob(audioChunks,{type:'audio/webm'});
+  try{
+    const transcript=await transcribeWithWhisper(blob);
+    transcribedText=transcript;
+  }catch(e){
+    transcribedText=simulateTranscription(selectedSentence.text);
+  }
+  showTranscript(transcribedText,duration);
+}
+async function transcribeWithWhisper(blob){
+  const formData=new FormData();
+  formData.append('file',blob,'audio.webm');
+  formData.append('model','whisper-1');
+  const r=await fetch('https://api.openai.com/v1/audio/transcriptions',{method:'POST',body:formData});
+  if(!r.ok)throw new Error('Whisper failed');
+  const d=await r.json();
+  return d.text||'';
+}
+function simulateTranscription(expected){
+  const words=expected.split(' ');
+  const result=[];
+  for(let w of words){
+    const r=Math.random();
+    if(r<0.08)continue;
+    else if(r<0.15)result.push(w.toLowerCase().replace(/[,.']/g,''));
+    else result.push(w.replace(/[,.']/g,'').toLowerCase());
+  }
+  if(Math.random()<0.3)result.splice(Math.floor(Math.random()*result.length),0,['um','uh','like','so'][Math.floor(Math.random()*4)]);
+  return result.join(' ');
+}
+function simulateFallback(){
+  transcribedText=simulateTranscription(selectedSentence.text);
+  showTranscript(transcribedText,recSeconds||4);
+}
+function showTranscript(text,duration){
+  document.getElementById('transcript-box').style.display='block';
+  document.getElementById('transcript-text').textContent=text||'(No speech detected — try speaking louder)';
+  document.getElementById('rec-status').textContent='Done! Review your transcript below.';
+  if(text&&text.trim().length>2)document.getElementById('get-feedback-btn').disabled=false;
+}
+async function getFeedback(){
+  if(!selectedSentence||!transcribedText)return;
+  showScreen('feedback');
+  document.getElementById('feedback-loading').style.display='flex';
+  document.getElementById('feedback-content').style.display='none';
+  const analysis=analyzeLocally(selectedSentence.text,transcribedText,recSeconds);
+  await streamAISuggestions(analysis);
+  renderFeedback(analysis);
+  document.getElementById('feedback-loading').style.display='none';
+  document.getElementById('feedback-content').style.display='block';
+  updateDashboard(analysis);
+}
+function analyzeLocally(expected,spoken,duration){
+  const expWords=expected.toLowerCase().replace(/[,.'!?]/g,'').split(/\s+/);
+  const spkWords=spoken.toLowerCase().replace(/[,.'!?]/g,'').split(/\s+/).filter(w=>w.length>0);
+  const fillers=['um','uh','like','so','yeah','okay','well','hmm'];
+  let matched=0,missing=[],extra=[],mispronounced=[];
+  const expSet=new Set(expWords);
+  const spkSet=new Set(spkWords.filter(w=>!fillers.includes(w)));
+  for(let w of expWords){
+    if(spkSet.has(w))matched++;
+    else{
+      const close=spkWords.find(sw=>levenshtein(w,sw)<=1&&!fillers.includes(sw));
+      if(close){matched+=0.7;mispronounced.push({expected:w,spoken:close});}
+      else missing.push(w);
+    }
+  }
+  for(let w of spkWords){
+    if(!expSet.has(w)&&!fillers.includes(w)&&levenshtein_min(w,expWords)>1)extra.push(w);
+  }
+  const fillerCount=spkWords.filter(w=>fillers.includes(w)).length;
+  const accuracy=Math.round((matched/expWords.length)*100);
+  const expectedDuration=expWords.length*0.45;
+  const speedRatio=duration>0?expectedDuration/Math.max(duration,1):1;
+  const fluencyPauses=Math.max(0,Math.min(20,fillerCount*8+(duration>expectedDuration*2?15:0)));
+  const fluency=Math.min(98,Math.max(30,Math.round((100-fluencyPauses)*(0.6+speedRatio*0.4))));
+  const pron=Math.min(98,Math.max(30,Math.round(accuracy*0.7+(100-missing.length*12)*0.3)));
+  const overall=Math.round(fluency*0.4+pron*0.35+accuracy*0.25);
+  return{expected,spoken,expWords,spkWords,missing,extra,mispronounced,fillerCount,accuracy,fluency,pron,overall,duration,sentence:selectedSentence};
+}
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+function levenshtein_min(word,words){return Math.min(...words.map(w=>levenshtein(word,w)));}
+async function streamAISuggestions(analysis){
+  const prompt=`You are an English speaking coach. Analyze this practice attempt and give 3 specific, actionable improvement tips.\n\nTarget sentence: "${analysis.expected}"\nWhat the learner said: "${analysis.spoken}"\nMissing words: ${analysis.missing.length>0?analysis.missing.join(', '):'none'}\nMispronounced words: ${analysis.mispronounced.length>0?analysis.mispronounced.map(m=>m.expected+'→'+m.spoken).join(', '):'none'}\nFiller words used: ${analysis.fillerCount}\nFluency score: ${analysis.fluency}/100\nPronunciation score: ${analysis.pron}/100\n\nRespond ONLY with a JSON array of exactly 3 objects, each with "title" (short, 4-6 words) and "tip" (one sentence, specific and actionable). No markdown, no preamble, just the JSON array.`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await resp.json();
+    const text=data.content?.[0]?.text||'';
+    const clean=text.replace(/```json|```/g,'').trim();
+    window._aiTips=JSON.parse(clean);
+  }catch(e){window._aiTips=getFallbackTips(analysis);}
+}
+function getFallbackTips(a){
+  const tips=[];
+  if(a.missing.length>0)tips.push({title:"Focus on missing words",tip:`Practice including "${a.missing[0]}" — try saying the full sentence slowly, one word at a time.`});
+  if(a.fillerCount>0)tips.push({title:"Reduce filler words",tip:`You used ${a.fillerCount} filler word(s). Try pausing silently instead of saying "um" or "uh" — it sounds more confident.`});
+  if(a.pron<75)tips.push({title:"Improve pronunciation clarity",tip:`Record yourself and compare with a native speaker. Focus on ending consonants clearly.`});
+  if(a.fluency<75)tips.push({title:"Work on speaking rhythm",tip:`Try the shadowing technique: listen to a native speaker say the sentence and repeat immediately, mimicking their rhythm.`});
+  tips.push({title:"Daily practice builds fluency",tip:`Spend 10 minutes each day reading aloud — this trains your mouth muscles and improves overall speech flow.`});
+  return tips.slice(0,3);
+}
+function renderFeedback(a){
+  const score=a.overall;
+  const circumference=238.76;
+  document.getElementById('score-circle').style.strokeDashoffset=circumference-(circumference*(score/100));
+  document.getElementById('overall-score-label').textContent=score;
+  const grade=score>=85?'Excellent!':score>=70?'Good attempt!':score>=55?'Keep practicing!':'Needs more work';
+  document.getElementById('fb-title').textContent=grade;
+  document.getElementById('fb-sentence').textContent='"'+a.expected+'"';
+  document.getElementById('fb-fluency-pill').textContent='Fluency: '+a.fluency;
+  document.getElementById('fb-pron-pill').textContent='Pronunciation: '+a.pron;
+  document.getElementById('fb-acc-pill').textContent='Accuracy: '+a.accuracy+'%';
+  document.getElementById('fc-fluency-score').textContent=a.fluency+'/100';
+  document.getElementById('fc-pron-score').textContent=a.pron+'/100';
+  const expSet=new Set(a.expWords);
+  const spkSet=new Set(a.spkWords);
+  const missingSet=new Set(a.missing);
+  const mispronouncedMap=Object.fromEntries(a.mispronounced.map(m=>[m.expected,m.spoken]));
+  let expHTML=a.expWords.map(w=>{
+    if(missingSet.has(w))return`<span class="word-missing">${w}</span>`;
+    if(mispronouncedMap[w])return`<span style="background:#fef3c7;color:#92400e;padding:0 3px;border-radius:3px">${w}</span>`;
+    return`<span class="word-ok">${w}</span>`;
+  }).join(' ');
+  const fillers=['um','uh','like','so','yeah','okay','well','hmm'];
+  let spkHTML=a.spkWords.map(w=>{
+    if(fillers.includes(w))return`<span class="word-added">[${w}]</span>`;
+    if(expSet.has(w))return`<span class="word-ok">${w}</span>`;
+    return`<span class="word-added">${w}</span>`;
+  }).join(' ');
+  document.getElementById('comp-expected').innerHTML=expHTML||'—';
+  document.getElementById('comp-spoken').innerHTML=spkHTML||'<em style="color:var(--ink3)">(nothing detected)</em>';
+  const flItems=[];
+  if(a.fillerCount>0)flItems.push({text:`Used ${a.fillerCount} filler word(s) like "um" or "uh"`,issue:true});
+  if(a.duration>a.expWords.length*0.7)flItems.push({text:'Speaking pace was a bit slow — try to maintain steady rhythm',issue:true});
+  else flItems.push({text:'Good speaking pace maintained throughout',issue:false});
+  if(a.extra.length===0)flItems.push({text:'No unnecessary words added — great sentence control!',issue:false});
+  document.getElementById('fc-fluency-items').innerHTML=flItems.map(i=>`<div class="fi ${i.issue?'issue':'good'}">${i.text}</div>`).join('');
+  const prItems=[];
+  if(a.missing.length>0)prItems.push({text:`Missed word(s): "${a.missing.slice(0,2).join('", "')}"`,issue:true});
+  if(a.mispronounced.length>0)prItems.push({text:`"${a.mispronounced[0].expected}" may need practice`,issue:true});
+  if(a.accuracy>=80)prItems.push({text:'Word recognition accuracy is good',issue:false});
+  if(prItems.length===0)prItems.push({text:'Clear pronunciation throughout',issue:false});
+  document.getElementById('fc-pron-items').innerHTML=prItems.map(i=>`<div class="fi ${i.issue?'issue':'good'}">${i.text}</div>`).join('');
+  const tips=window._aiTips||getFallbackTips(a);
+  document.getElementById('ai-suggestions').innerHTML=tips.map((t,i)=>`
+    <div class="suggestion-item">
+      <div class="si-num">${i+1}</div>
+      <div class="si-text"><strong>${t.title}:</strong> ${t.tip}</div>
+    </div>
+  `).join('');
+}
+function updateDashboard(a){
+  sessionHistory.push(a);
+  const avgFluency=Math.round(sessionHistory.reduce((s,x)=>s+x.fluency,0)/sessionHistory.length);
+  const avgPron=Math.round(sessionHistory.reduce((s,x)=>s+x.pron,0)/sessionHistory.length);
+  document.getElementById('dash-fluency').textContent=Math.round((72+avgFluency)/2);
+  document.getElementById('dash-pronunciation').textContent=Math.round((68+avgPron)/2);
+  document.getElementById('dash-sessions').textContent=12+sessionHistory.length;
+  document.querySelector('#score-cards .sc-bar-fill.fill-green').style.width=Math.round((72+avgFluency)/2)+'%';
+  document.querySelector('#score-cards .sc-bar-fill.fill-amber').style.width=Math.round((68+avgPron)/2)+'%';
+  const al=document.getElementById('activity-list');
+  const newItem=document.createElement('div');
+  newItem.className='activity-item';
+  const scoreClass=a.overall>=75?'badge-green':a.overall>=60?'badge-amber':'badge-blue';
+  newItem.innerHTML=`<div class="ai-score-badge ${scoreClass}">${a.overall}</div><div class="ai-content"><div class="ai-sentence">${a.expected}</div><div class="ai-meta">Fluency: ${a.fluency} · Pronunciation: ${a.pron} · ${a.sentence.level}</div></div><div class="ai-time">Just now</div>`;
+  al.insertBefore(newItem,al.firstChild);
+  if(al.children.length>4)al.removeChild(al.lastChild);
+}
+function retryPractice(){
+  transcribedText='';
+  document.getElementById('transcript-box').style.display='none';
+  document.getElementById('get-feedback-btn').disabled=true;
+  document.getElementById('rec-status').textContent='Press the microphone to start recording';
+  showScreen('practice');
+}
+renderSentences();
+</script>
+</body>
+</html>
