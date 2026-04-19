@@ -1,4 +1,4 @@
-# LinguaAI — Digital Language Lab 🎙️
+# LinguaAI — Digital Language Lab
 
 > An AI-powered English language learning platform demo. Built for investor demos and rapid prototyping.
 
@@ -14,18 +14,19 @@ A fully functional, single-file web app with 4 screens:
 |--------|-------------|
 | 🔐 Login | Simple login (any credentials work) |
 | 📊 Dashboard | Fluency score, pronunciation score, recent activity, suggested exercises |
-| 🎙️ Practice | Choose a sentence, record yourself, get a transcript |
+| 🔊🎙️ Practice | **Listen** to a sentence, then **repeat** it — get a transcript & AI feedback |
 | 📝 Feedback | AI-powered word-by-word analysis, scores, and improvement tips |
 
 ---
 
 ## Features
 
-- **Real microphone recording** via Web Speech API / MediaRecorder
+- **Listen & Repeat** — Sarvam AI generates natural-sounding audio in 11 Indian languages; learner hears the sentence first, then speaks it back
+- **Real microphone recording** via Sarvam STT API (Saaras v3 model)
 - **Levenshtein distance** word matching for pronunciation analysis
 - **Filler word detection** (um, uh, like...) for fluency scoring
 - **Claude AI** generates personalized improvement suggestions
-- **Graceful fallback** — simulates transcript if mic is unavailable
+- **Graceful fallbacks** — browser SpeechRecognition + simulation if no API key; browser speechSynthesis if Sarvam TTS unavailable
 - **Live dashboard** updates after every practice session
 - **Zero dependencies** — single HTML file, no build step
 
@@ -44,6 +45,21 @@ npx serve .
 python3 -m http.server 8080
 # then open http://localhost:8080
 ```
+
+---
+
+## API Keys
+
+### Sarvam AI (Speech-to-Text + Text-to-Speech)
+Get a free API key at [console.sarvam.ai](https://console.sarvam.ai) (no credit card needed).
+Paste it in the app on the Practice screen — it powers both voice playback and transcription.
+
+Without a key, the app falls back to:
+- **STT:** browser SpeechRecognition → simulation
+- **TTS:** browser speechSynthesis
+
+### Claude AI (Feedback Tips)
+No key needed — the app calls the Claude API directly. Tips fall back to rule-based suggestions if the call fails.
 
 ---
 
@@ -68,10 +84,11 @@ python3 -m http.server 8080
 ## Tech Stack
 
 - **Frontend:** Vanilla HTML/CSS/JavaScript (zero frameworks)
+- **Speech-to-Text:** Sarvam AI (`saaras:v3`) with browser fallback
+- **Text-to-Speech:** Sarvam AI (`bulbul:v3`) with browser speechSynthesis fallback
 - **AI Feedback:** Claude API (`claude-sonnet-4-20250514`)
-- **Speech-to-Text:** Web MediaRecorder API + simulated transcript fallback
 - **Evaluation Logic:** Rule-based (Levenshtein distance + filler detection)
-- **Fonts:** DM Sans + DM Serif Display (Google Fonts)
+- **Fonts:** Nunito + Fredoka One + Sora (Google Fonts)
 
 ---
 
